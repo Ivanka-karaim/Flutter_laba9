@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const DiagramWidget(data:[0.1, 0.2, 0.3, 0.4, 0.5]),
+      home: const DiagramWidget(data:[0.9, 0.2, 0.3, 0.15, 0.5]),
     );
   }
 }
@@ -82,44 +82,24 @@ class _DiagramWidgetState extends State<DiagramWidget>
     with SingleTickerProviderStateMixin {
   late Animation<double> animation;
   late AnimationController controller;
-  late List<Animation<double>> _animations;
 
   @override
   void initState() {
     super.initState();
 
-    controller = AnimationController(duration:const Duration(seconds:10), vsync: this);
-    _animations = List.generate(widget.data.length, (index) =>
-        CurvedAnimation(
+    controller = AnimationController(duration:const Duration(seconds:5), vsync: this);
+    animation = CurvedAnimation(
       parent: controller,
       curve: Curves.easeIn,
     )..addStatusListener((status) {
-                   if (status == AnimationStatus.completed) {
-                     controller.reverse();
-                   } else if (status == AnimationStatus.dismissed) {
-                     controller.forward();
-                   }
-                 })).toList();
-
-
-
+      if (status == AnimationStatus.completed) {
+        controller.reverse();
+      } else
+        if (status == AnimationStatus.dismissed) {
+        controller.forward();
+      }
+    });
     controller.forward();
-
-    // super.initState();
-    // animationController =
-    //     AnimationController(duration: const Duration(seconds: 10), vsync: this);
-    // animation =
-    //     CurvedAnimation(parent: animationController, curve: Curves.easeIn)
-    //       ..addStatusListener((status) {
-    //         if (status == AnimationStatus.completed) {
-    //           animationController.reverse();
-    //         } else if (status == AnimationStatus.dismissed) {
-    //           animationController.forward();
-    //         }
-    //       });
-    // animationController.forward();
-
-
   }
 
   @override
@@ -129,8 +109,8 @@ class _DiagramWidgetState extends State<DiagramWidget>
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-        for (int i = 0; i < _animations.length; i++)
-          AW(data_end:widget.data[i],animation: _animations[i])
+        for (int i = 0; i < widget.data.length; i++)
+          AW(data_end:widget.data[i],animation: animation)
     ]));
   }
 
@@ -148,7 +128,7 @@ class AW extends AnimatedWidget {
       : super(listenable: animation);
 
 
-  static final _colorTween = ColorTween(begin: Colors.red, end: Colors.blue);
+  static final _colorTween = ColorTween(begin: Colors.red, end: Colors.yellow);
 
   @override
   Widget build(BuildContext context) {
